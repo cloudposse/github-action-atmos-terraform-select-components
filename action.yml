@@ -1,5 +1,5 @@
-name: "Atmos GitOps Enabled Components"
-description: "A GitHub Action to get list of enabled components that have setting `github.actions_enabled` set to `true`"
+name: "Atmos GitOps Selected Components"
+description: "A GitHub Action to get list of selected components by query"
 author: hello@cloudposse.com
 branding:
   icon: "file"
@@ -50,15 +50,15 @@ inputs:
     default: 'false'
     required: false
 outputs:
-  enabled-components:
-    description: Enabled GitOps components
-    value: ${{ steps.enabled-components.outputs.components }}
+  selected-components:
+    description: Selected GitOps components
+    value: ${{ steps.selected-components.outputs.components }}
   matrix:
-    description: Matrix for Enabled GitOps components
+    description: Matrix for Selected GitOps components
     value: ${{ steps.matrix.outputs.matrix }}
-  has-enabled-components:
-    description: Whether there are enabled components
-    value: ${{ steps.enabled-components.outputs.components != '[]' }}
+  has-selected-components:
+    description: Whether there are selected components
+    value: ${{ steps.selected-components.outputs.components != '[]' }}
 
 runs:
   using: "composite"
@@ -86,8 +86,8 @@ runs:
       with:
         ref: ${{ inputs.default-branch }}
 
-    - name: atmos get enabled components
-      id: enabled-components
+    - name: atmos get selected components
+      id: selected-components
       shell: bash
       env:
         ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
@@ -96,7 +96,7 @@ runs:
         JQ_QUERY='${{ inputs.jq-query }}' DEBUG="${{ inputs.debug }}" src/filter.sh
 
         components=$(cat components.json)
-        echo "Enabled components: $components"
+        echo "Selected components: $components"
         printf "%s" "components=$components" >> $GITHUB_OUTPUT
 
     - name: build matrix

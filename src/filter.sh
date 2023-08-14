@@ -5,7 +5,7 @@ JQ_QUERY=${JQ_QUERY:-'to_entries[] | .key as $parent | .value.components.terrafo
 atmos describe stacks --format json --file stacks.json
 [ "$DEBUG" == "true" ] && cat stacks.json
 
-jq -r $JQ_QUERY stacks.json > components.csv
+jq -r "$JQ_QUERY" stacks.json > components.csv
 [ "$DEBUG" == "true" ] && cat components.csv
 
 echo -n "" > enriched_components.csv
