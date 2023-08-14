@@ -1,0 +1,15 @@
+import:
+  - orgs/test/plat/_defaults
+
+vars:
+  stage: dev
+
+components:
+  terraform:
+    test-3:
+      seed: 6
+    test-4:
+      settings:
+        github:
+          actions_enabled: true
+      seed: 2

@@ -1,0 +1,15 @@
+import:
+  - orgs/test/core/_defaults
+
+vars:
+  stage: auto
+
+components:
+  terraform:
+    test-1:
+      seed: 6
+    test-2:
+      settings:
+        github:
+          actions_enabled: true
+      seed: 2

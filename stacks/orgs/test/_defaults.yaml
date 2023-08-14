@@ -1,7 +1,6 @@
 vars:
   namespace: tst
-  tenant: test
-  environment: t
+  environment: ue2
   label_order:
     - namespace
     - tenant

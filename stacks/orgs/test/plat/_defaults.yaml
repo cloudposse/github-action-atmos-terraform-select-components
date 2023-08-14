@@ -1,0 +1,5 @@
+import:
+  - orgs/test/_defaults
+
+vars:
+  tenant: plat

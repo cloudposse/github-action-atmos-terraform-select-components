@@ -90,6 +90,10 @@ runs:
       run: |
         DEBUG="${{ inputs.debug }}" src/filter.sh
 
+        components=$(cat components.json)
+        echo "Enabled components: $components"
+        printf "%s" "components=$components" >> $GITHUB_OUTPUT
+
     - name: build matrix
       id: matrix
       shell: bash

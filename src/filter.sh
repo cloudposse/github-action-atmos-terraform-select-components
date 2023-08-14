@@ -6,6 +6,7 @@ atmos describe stacks --format json --file stacks.json
 jq -r 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")' stacks.json > components.csv
 [ "$DEBUG" == "true" ] && cat components.csv
 
+echo -n "" > enriched_components.csv
 while IFS=',' read -r stack component
 do
     component_path=$(atmos describe component $component -s $stack --format json | jq -rc '.. | select(.component_info)? | .component_info.component_path')
@@ -19,11 +20,11 @@ while IFS=',' read -r stack component component_path; do
     stack_slug="$stack-$component"
     printf '{"stack": "%s", "component": "%s", "stack_slug": "%s", "component_path": "%s"},' "$stack" "$component" "$stack_slug" "$component_path" >> components.json
 done < enriched_components.csv
-sed -i '$ s/,$//' components.json   # Removing the last comma and appending closing brackets
+sed -i.bak '$ s/,$//' components.json   # Removing the last comma and appending closing brackets
 echo -n ']' >> components.json
 
 [ "$DEBUG" == "true" ] && cat components.json
 
 components=$(jq -c < components.json)
-echo "Enabled components: $components"
-printf "%s" "components=$components" >> $GITHUB_OUTPUT
+echo -n "$components" > components.json
+[ "$DEBUG" == "true" ] && echo "Enabled components: $components"

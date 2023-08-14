@@ -1,0 +1,13 @@
+import:
+  - orgs/test/plat/_defaults
+
+vars:
+  stage: sandbox
+
+components:
+  terraform:
+    test-5:
+      settings:
+        github:
+          actions_enabled: true
+      seed: 3
