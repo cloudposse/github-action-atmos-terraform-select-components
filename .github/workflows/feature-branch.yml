@@ -13,6 +13,10 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 1
 
+      - uses: cloudposse/github-action-setup-atmos@v1.0.0
+        with:
+          atmos-version: "latest"
+
       - uses: dcarbone/install-jq-action@v1.0.1
         with:
           version: "1.6"
