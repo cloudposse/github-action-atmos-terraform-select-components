@@ -2,7 +2,7 @@
 <!-- markdownlint-disable -->
 # github-action-atmos-terraform-select-components
 
- [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+ [![Latest Release](https://img.shields.io/github/release/cloudposse/github-action-atmos-terraform-select-components.svg)](https://github.com/cloudposse/github-action-atmos-terraform-select-components/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 <!-- markdownlint-restore -->
 
 [![README Header][readme_header_img]][readme_header_link]
@@ -30,7 +30,7 @@
 
 -->
 
-GitHub Action that output list of Atmos components by jq query
+GitHub Action that outputs list of Atmos components by jq query
 
 ---
 
@@ -60,7 +60,14 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 ## Introduction
 
-GitHub Action that output list of Atmos components by jq query
+GitHub Action that outputs list of Atmos components by jq query.
+
+Example jq query:
+```
+to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")
+```
+
+This query will fetch components that have settings set `github.actions_enabled: true`
 
 
 
@@ -70,21 +77,48 @@ GitHub Action that output list of Atmos components by jq query
 
 
 
-Define job like
+### Workflow example
+
+Following example will get components that have settings `github.actions_enabled: true` and then in second job will just print `stack_slug`.
 
 ```yaml
-jobs:
-  selected-components:
-    runs-on: ubuntu-latest
-    name: Select Components
-    outputs:
-      matrix: ${{ steps.components.outputs.matrix }}
-    steps:
-      - name: Selected Components
-        id: components
-        uses: cloudposse/github-action-atmos-terraform-select-components@v0
-        with:
-          atmos-config-path: ${{ env.ATMOS_CLI_CONFIG_PATH }}
+  name: 👽 Atmos Terraform Drift Detection
+  run-name: 👽 Atmos Terraform Drift Detection
+
+  on:
+    schedule:
+      - cron: "0 * * * *"
+
+  permissions:
+    id-token: write
+    contents: read
+
+  jobs:
+    selected-components:
+      runs-on: ubuntu-latest
+      name: Select Components
+      outputs:
+        matrix: ${{ steps.components.outputs.matrix }}
+      steps:
+        - name: Selected Components
+          id: components
+          uses: cloudposse/github-action-atmos-terraform-select-components@v0
+          with:
+            atmos-config-path: "${{ github.workspace }}/rootfs/usr/local/etc/atmos/"
+            jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
+
+    drift-detection:
+      runs-on: ubuntu-latest
+      needs:
+        - selected-components
+      if: ${{ needs.selected-components.outputs.matrix != '{"include":[]}' }}
+      strategy:
+        matrix: ${{ fromJson(needs.selected-components.outputs.matrix) }}
+      name: ${{ matrix.stack_slug }}
+      steps:
+        - name: echo 
+          run:
+            echo "${{ matrix.stack_slug }}"
 ```
 
 
@@ -114,6 +148,7 @@ Check out these related projects.
 
 For additional context, refer to some of these links.
 
+- [github-action-atmos-terraform-drift-detection](https://github.com/cloudposse/github-action-atmos-terraform-drift-detection) - Companion GitHub Action for drift detection
 - [github-actions-workflows](https://github.com/cloudposse/github-actions-workflows) - Reusable workflows for different types of projects
 - [example-github-action-release-workflow](https://github.com/cloudposse/example-github-action-release-workflow) - Example application with complicated release workflow
 
