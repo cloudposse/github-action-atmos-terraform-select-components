@@ -1,9 +1,11 @@
 #!/bin/bash
 
+JQ_QUERY=${JQ_QUERY:-'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'}
+
 atmos describe stacks --format json --file stacks.json
 [ "$DEBUG" == "true" ] && cat stacks.json
 
-jq -r 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")' stacks.json > components.csv
+jq -r $JQ_QUERY stacks.json > components.csv
 [ "$DEBUG" == "true" ] && cat components.csv
 
 echo -n "" > enriched_components.csv
