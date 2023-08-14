@@ -12,7 +12,7 @@
 | install-jq | Whether to install jq | false | false |
 | install-terraform | Whether to install terraform | true | false |
 | jq-force | Whether to force the installation of jq | true | false |
-| jq-query | jq query that will be used to select atmos components | 'to\_entries[] \| .key as $parent \| .value.components.terraform \| to\_entries[] \| select(.value.settings.github.actions\_enabled // false) \| [$parent, .key] \| join(",")' | true |
+| jq-query | jq query that will be used to select atmos components | to\_entries[] \| .key as $parent \| .value.components.terraform \| to\_entries[] \| select(.value.settings.github.actions\_enabled // false) \| [$parent, .key] \| join(",") | true |
 | jq-version | The version of jq to install if install-jq is true | 1.6 | false |
 | terraform-version | The version of terraform to install if install-terraform is true | latest | false |
 
@@ -21,7 +21,7 @@
 
 | Name | Description |
 |------|-------------|
-| enabled-components | Enabled GitOps components |
-| has-enabled-components | Whether there are enabled components |
-| matrix | Matrix for Enabled GitOps components |
+| has-selected-components | Whether there are selected components |
+| matrix | Matrix for Selected GitOps components |
+| selected-components | Selected GitOps components |
 <!-- markdownlint-restore -->
