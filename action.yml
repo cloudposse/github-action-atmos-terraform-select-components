@@ -92,7 +92,8 @@ runs:
       env:
         ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
       run: |
-        JQ_QUERY="${{ inputs.jq-query }}" DEBUG="${{ inputs.debug }}" src/filter.sh
+        echo '${{ inputs.jq-query }}'
+        JQ_QUERY='${{ inputs.jq-query }}' DEBUG="${{ inputs.debug }}" src/filter.sh
 
         components=$(cat components.json)
         echo "Enabled components: $components"
