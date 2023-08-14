@@ -1,0 +1,99 @@
+name: "Atmos GitOps Enabled Components"
+description: "A GitHub Action to get list of enabled components that have setting `github.actions_enabled` set to `true`"
+author: hello@cloudposse.com
+branding:
+  icon: "file"
+  color: "white"
+inputs:
+  default-branch:
+    description: The default branch to use for the base ref.
+    required: false
+    default: ${{ github.event.repository.default_branch }}
+  install-atmos:
+    description: Whether to install atmos
+    required: false
+    default: "true"
+  atmos-version:
+    description: The version of atmos to install if install-atmos is true
+    required: false
+    default: "latest"
+  atmos-config-path:
+    description: The path to the atmos.yaml file
+    required: false
+    default: atmos.yaml
+  install-terraform:
+    description: Whether to install terraform
+    required: false
+    default: "true"
+  terraform-version:
+    description: The version of terraform to install if install-terraform is true
+    required: false
+    default: "latest"
+  install-jq:
+    description: Whether to install jq
+    required: false
+    default: "false"
+  jq-version:
+    description: The version of jq to install if install-jq is true
+    required: false
+    default: "1.6"
+  jq-force:
+    description: Whether to force the installation of jq
+    required: false
+    default: "true"
+  debug:
+    description: "Enable action debug mode. Default: 'false'"
+    default: 'false'
+    required: false
+outputs:
+  enabled-components:
+    description: Enabled GitOps components
+    value: ${{ steps.enabled-components.outputs.components }}
+  matrix:
+    description: Matrix for Enabled GitOps components
+    value: ${{ steps.matrix.outputs.matrix }}
+  has-enabled-components:
+    description: Whether there are enabled components
+    value: ${{ steps.enabled-components.outputs.components != '[]' }}
+
+runs:
+  using: "composite"
+  steps:
+    - if: ${{ inputs.install-terraform == 'true' }}
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
+
+    - if: ${{ inputs.install-atmos == 'true' }}
+      uses: cloudposse/github-action-setup-atmos@v1.0.0
+      env:
+       ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
+      with:
+        atmos-version: ${{ inputs.atmos-version }}
+        install-wrapper: false
+
+    - if: ${{ inputs.install-jq == 'true' }}
+      uses: dcarbone/install-jq-action@v1.0.1
+      with:
+        version: ${{ inputs.jq-version }}
+        force: ${{ inputs.jq-force }}
+
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.default-branch }}
+
+    - name: atmos get enabled components
+      id: enabled-components
+      shell: bash
+      env:
+        ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
+      run: |
+        DEBUG="${{ inputs.debug }}" src/filter.sh
+
+    - name: build matrix
+      id: matrix
+      shell: bash
+      run: |
+        matrix=$(jq -c '{include:[.[]]}' < components.json)
+        echo "matrix=$matrix" >> $GITHUB_OUTPUT
+        [[ "${{ inputs.debug }}" == "true" ]] && echo "$matrix"
