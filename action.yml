@@ -8,7 +8,7 @@ inputs:
   jq-query:
     description: jq query that will be used to select atmos components
     required: true
-    default: "'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(\",\")'"
+    default: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
   default-branch:
     description: The default branch to use for the base ref.
     required: false
