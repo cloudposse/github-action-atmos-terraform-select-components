@@ -28,8 +28,19 @@ related: []
 description: GitHub Action that outputs list of Atmos components by jq query
 
 introduction: |-
-  GitHub Action that outputs list of Atmos components by jq query
+  GitHub Action that outputs list of Atmos components by jq query.
+
+  Example jq query:
+  ```
+  to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")
+  ```
+
+  This query will fetch components that have settings set `github.actions_enabled: true`
+
 references:
+  - name: "github-action-atmos-terraform-drift-detection"
+    description: "Companion GitHub Action for drift detection"
+    url: "https://github.com/cloudposse/github-action-atmos-terraform-drift-detection"
   - name: "github-actions-workflows"
     description: "Reusable workflows for different types of projects"
     url: "https://github.com/cloudposse/github-actions-workflows"
@@ -38,21 +49,48 @@ references:
     url: "https://github.com/cloudposse/example-github-action-release-workflow"
 
 usage: |
-  Define job like
+  ### Workflow example
+
+  Following example will get components that have settings `github.actions_enabled: true` and then in second job will just print `stack_slug`.
 
   ```yaml
-  jobs:
-    selected-components:
-      runs-on: ubuntu-latest
-      name: Select Components
-      outputs:
-        matrix: ${{ steps.components.outputs.matrix }}
-      steps:
-        - name: Selected Components
-          id: components
-          uses: cloudposse/github-action-atmos-terraform-select-components@v0
-          with:
-            atmos-config-path: ${{ env.ATMOS_CLI_CONFIG_PATH }}
+    name: 👽 Atmos Terraform Drift Detection
+    run-name: 👽 Atmos Terraform Drift Detection
+
+    on:
+      schedule:
+        - cron: "0 * * * *"
+
+    permissions:
+      id-token: write
+      contents: read
+
+    jobs:
+      selected-components:
+        runs-on: ubuntu-latest
+        name: Select Components
+        outputs:
+          matrix: ${{ steps.components.outputs.matrix }}
+        steps:
+          - name: Selected Components
+            id: components
+            uses: cloudposse/github-action-atmos-terraform-select-components@v0
+            with:
+              atmos-config-path: "${{ github.workspace }}/rootfs/usr/local/etc/atmos/"
+              jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
+
+      drift-detection:
+        runs-on: ubuntu-latest
+        needs:
+          - selected-components
+        if: ${{ needs.selected-components.outputs.matrix != '{"include":[]}' }}
+        strategy:
+          matrix: ${{ fromJson(needs.selected-components.outputs.matrix) }}
+        name: ${{ matrix.stack_slug }}
+        steps:
+          - name: echo 
+            run:
+              echo "${{ matrix.stack_slug }}"
   ```
 
 include:

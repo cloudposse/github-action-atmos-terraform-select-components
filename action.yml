@@ -1,5 +1,5 @@
-name: "Atmos GitOps Selected Components"
-description: "A GitHub Action to get list of selected components by query"
+name: "Atmos GitOps Select Components"
+description: "A GitHub Action to get list of selected components by jq query"
 author: hello@cloudposse.com
 branding:
   icon: "file"
@@ -8,7 +8,6 @@ inputs:
   jq-query:
     description: jq query that will be used to select atmos components
     required: true
-    default: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
   default-branch:
     description: The default branch to use for the base ref.
     required: false
@@ -92,7 +91,6 @@ runs:
       env:
         ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
       run: |
-        echo '${{ inputs.jq-query }}'
         JQ_QUERY='${{ inputs.jq-query }}' DEBUG="${{ inputs.debug }}" src/filter.sh
 
         components=$(cat components.json)
