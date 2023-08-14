@@ -91,7 +91,7 @@ runs:
       env:
         ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
       run: |
-        JQ_QUERY='${{ inputs.jq-query }}' DEBUG="${{ inputs.debug }}" src/filter.sh
+        JQ_QUERY='${{ inputs.jq-query }}' DEBUG="${{ inputs.debug }}" ${{ github.action_path }}/src/filter.sh
 
         components=$(cat components.json)
         echo "Selected components: $components"
