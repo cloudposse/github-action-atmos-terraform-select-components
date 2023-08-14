@@ -16,16 +16,19 @@ license: "APACHE2"
 github_repo: cloudposse/github-action-atmos-terraform-select-components
 
 badges:
+  - name: "Latest Release"
+    image: "https://img.shields.io/github/release/cloudposse/github-action-atmos-terraform-select-components.svg"
+    url: "https://github.com/cloudposse/github-action-atmos-terraform-select-components/releases/latest"
   - name: "Slack Community"
     image: "https://slack.cloudposse.com/badge.svg"
     url: "https://slack.cloudposse.com"
 
 related: []
 
-description: GitHub Action that output list of Atmos components by jq query
+description: GitHub Action that outputs list of Atmos components by jq query
 
 introduction: |-
-  GitHub Action that output list of Atmos components by jq query
+  GitHub Action that outputs list of Atmos components by jq query
 references:
   - name: "github-actions-workflows"
     description: "Reusable workflows for different types of projects"
