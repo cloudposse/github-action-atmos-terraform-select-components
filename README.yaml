@@ -1,0 +1,63 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+name: github-action-atmos-terraform-select-components
+
+tags:
+  - github-action
+  - atmos
+  - terraform
+
+license: "APACHE2"
+
+github_repo: cloudposse/github-action-atmos-terraform-select-components
+
+badges:
+  - name: "Slack Community"
+    image: "https://slack.cloudposse.com/badge.svg"
+    url: "https://slack.cloudposse.com"
+
+related: []
+
+description: GitHub Action that output list of Atmos components by jq query
+
+introduction: |-
+  GitHub Action that output list of Atmos components by jq query
+references:
+  - name: "github-actions-workflows"
+    description: "Reusable workflows for different types of projects"
+    url: "https://github.com/cloudposse/github-actions-workflows"
+  - name: "example-github-action-release-workflow"
+    description: "Example application with complicated release workflow"
+    url: "https://github.com/cloudposse/example-github-action-release-workflow"
+
+usage: |
+  Define job like
+
+  ```yaml
+  jobs:
+    selected-components:
+      runs-on: ubuntu-latest
+      name: Select Components
+      outputs:
+        matrix: ${{ steps.components.outputs.matrix }}
+      steps:
+        - name: Selected Components
+          id: components
+          uses: cloudposse/github-action-atmos-terraform-select-components@v0
+          with:
+            atmos-config-path: ${{ env.ATMOS_CLI_CONFIG_PATH }}
+  ```
+
+include:
+
+contributors:
+  - name: "Zinovii Dmytriv"
+    github: "zdmytriv"
+  - name: "Erik Osterman"
+    github: "osterman"
+  - name: "Daniel Miller"
+    github: "milldr"
