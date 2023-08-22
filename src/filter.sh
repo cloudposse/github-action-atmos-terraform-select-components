@@ -31,4 +31,5 @@ echo -n ']' >> components.json
 
 components=$(jq -c < components.json)
 echo -n "$components" > components.json
-[ "$DEBUG" == "true" ] && echo "Selected components: $components"
+# [ "$DEBUG" == "true" ] && echo "Selected components: $components"
+cat components.json
