@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 JQ_QUERY=${JQ_QUERY:-'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'}
 
 atmos describe stacks --format json --file stacks.json
