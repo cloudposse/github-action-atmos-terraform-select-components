@@ -103,4 +103,3 @@ runs:
       run: |
         matrix=$(jq -c '{include:[.[]]}' < components.json)
         echo "matrix=$matrix" >> $GITHUB_OUTPUT
-        [[ "${{ inputs.debug }}" == "true" ]] && echo "$matrix"
