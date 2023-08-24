@@ -62,12 +62,24 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 GitHub Action that outputs list of Atmos components by jq query.
 
-Example jq query:
+For example following query will fetch components that have in settings set `github.actions_enabled: true`:
+
 ```
 to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")
 ```
 
-This query will fetch components that have settings set `github.actions_enabled: true`
+Output of this action is a list of basic component information. For example:
+
+```json
+[
+  {
+  "stack": "plat-ue2-sandbox",
+  "component": "test-component-01",
+  "stack_slug": "plat-ue2-sandbox-test-component-01",
+  "component_path": "components/terraform/s3-bucket"
+  }
+]
+```
 
 
 
@@ -77,22 +89,11 @@ This query will fetch components that have settings set `github.actions_enabled:
 
 
 
-### Workflow example
+### GitHub Actions Workflow Example
 
-Following example will get components that have settings `github.actions_enabled: true` and then in second job will just print `stack_slug`.
+In following GitHub workflow example first job will filter components that have settings `github.actions_enabled: true` and then in following job `stack_slug` will be printed to stdout.
 
 ```yaml
-  name: 👽 Atmos Terraform Drift Detection
-  run-name: 👽 Atmos Terraform Drift Detection
-
-  on:
-    schedule:
-      - cron: "0 * * * *"
-
-  permissions:
-    id-token: write
-    contents: read
-
   jobs:
     selected-components:
       runs-on: ubuntu-latest
@@ -107,7 +108,7 @@ Following example will get components that have settings `github.actions_enabled
             atmos-config-path: "${{ github.workspace }}/rootfs/usr/local/etc/atmos/"
             jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
 
-    drift-detection:
+    print-stack-slug:
       runs-on: ubuntu-latest
       needs:
         - selected-components
@@ -149,6 +150,7 @@ Check out these related projects.
 For additional context, refer to some of these links.
 
 - [github-action-atmos-terraform-drift-detection](https://github.com/cloudposse/github-action-atmos-terraform-drift-detection) - Companion GitHub Action for drift detection
+- [github-action-atmos-terraform-drift-remediation](https://github.com/cloudposse/github-action-atmos-terraform-drift-remediation) - Companion GitHub Action for drift remediation
 - [github-actions-workflows](https://github.com/cloudposse/github-actions-workflows) - Reusable workflows for different types of projects
 - [example-github-action-release-workflow](https://github.com/cloudposse/example-github-action-release-workflow) - Example application with complicated release workflow
 

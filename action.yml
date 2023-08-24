@@ -12,10 +12,6 @@ inputs:
     description: The default branch to use for the base ref.
     required: false
     default: ${{ github.event.repository.default_branch }}
-  install-atmos:
-    description: Whether to install atmos
-    required: false
-    default: "true"
   atmos-version:
     description: The version of atmos to install if install-atmos is true
     required: false
@@ -24,26 +20,14 @@ inputs:
     description: The path to the atmos.yaml file
     required: false
     default: atmos.yaml
-  install-terraform:
-    description: Whether to install terraform
-    required: false
-    default: "true"
   terraform-version:
     description: The version of terraform to install if install-terraform is true
     required: false
     default: "latest"
-  install-jq:
-    description: Whether to install jq
-    required: false
-    default: "false"
   jq-version:
     description: The version of jq to install if install-jq is true
     required: false
     default: "1.6"
-  jq-force:
-    description: Whether to force the installation of jq
-    required: false
-    default: "true"
   debug:
     description: "Enable action debug mode. Default: 'false'"
     default: 'false'
@@ -62,12 +46,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - if: ${{ inputs.install-terraform == 'true' }}
+    - name: Install Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: ${{ inputs.terraform-version }}
+        terraform_wrapper: false
 
-    - if: ${{ inputs.install-atmos == 'true' }}
+    - name: Install Atmos
       uses: cloudposse/github-action-setup-atmos@v1.0.0
       env:
        ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
@@ -75,17 +60,17 @@ runs:
         atmos-version: ${{ inputs.atmos-version }}
         install-wrapper: false
 
-    - if: ${{ inputs.install-jq == 'true' }}
+    - name: Install JQ
       uses: dcarbone/install-jq-action@v1.0.1
       with:
         version: ${{ inputs.jq-version }}
-        force: ${{ inputs.jq-force }}
 
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
       with:
         ref: ${{ inputs.default-branch }}
 
-    - name: atmos get selected components
+    - name: Filter Components
       id: selected-components
       shell: bash
       env:
@@ -97,7 +82,7 @@ runs:
         echo "Selected components: $components"
         printf "%s" "components=$components" >> $GITHUB_OUTPUT
 
-    - name: build matrix
+    - name: Build Matrix
       id: matrix
       shell: bash
       run: |
