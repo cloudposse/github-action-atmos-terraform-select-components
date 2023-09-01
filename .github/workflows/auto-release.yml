@@ -25,15 +25,3 @@ jobs:
           config-name: auto-release.yml
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
-  name: Major Release Tagger
-
-  on:
-    release:
-      types:
-        - published
-
-  jobs:
-    publish:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: cloudposse/github-action-major-release-tagger@v1
