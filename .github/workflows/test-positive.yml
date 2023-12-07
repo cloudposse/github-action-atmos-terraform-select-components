@@ -48,5 +48,5 @@ jobs:
 
       - uses: nick-fields/assert-action@v1
         with:
-          expected: '{"include":[{"component":"test-1","stack":"core-ue2-auto","stack_slug":"core-ue2-auto-test-1"},{"component":"test-2","stack":"core-ue2-auto","stack_slug":"core-ue2-auto-test-2"},{"component":"test-3","stack":"plat-ue2-dev","stack_slug":"plat-ue2-dev-test-3"},{"component":"test-4","stack":"plat-ue2-dev","stack_slug":"plat-ue2-dev-test-4"},{"component":"test-5","stack":"plat-ue2-sandbox","stack_slug":"plat-ue2-sandbox-test-5"}]}'
+          expected: '{"include":[{"name":"core-auto","items":"{\"include\":[{\"component\":\"test-1\",\"stack\":\"core-ue2-auto\",\"stack_slug\":\"core-ue2-auto-test-1\"},{\"component\":\"test-2\",\"stack\":\"core-ue2-auto\",\"stack_slug\":\"core-ue2-auto-test-2\"}]}"},{"name":"plat-dev","items":"{\"include\":[{\"component\":\"test-3\",\"stack\":\"plat-ue2-dev\",\"stack_slug\":\"plat-ue2-dev-test-3\"},{\"component\":\"test-4\",\"stack\":\"plat-ue2-dev\",\"stack_slug\":\"plat-ue2-dev-test-4\"}]}"},{"name":"plat-sandbox","items":"{\"include\":[{\"component\":\"test-5\",\"stack\":\"plat-ue2-sandbox\",\"stack_slug\":\"plat-ue2-sandbox-test-5\"}]}"}]}'
           actual: "${{ needs.test.outputs.matrix }}"
