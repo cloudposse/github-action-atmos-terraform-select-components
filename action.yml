@@ -5,10 +5,10 @@ branding:
   icon: "file"
   color: "white"
 inputs:
-  jq-query:
+  select-filter:
     description: jq query that will be used to select atmos components
     required: false
-    default: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
+    default: '.'
   head-ref:
     description: The head ref to checkout. If not provided, the head default branch is used.
     required: false
@@ -81,7 +81,7 @@ runs:
         ATMOS_CLI_CONFIG_PATH:  ${{ steps.config.outputs.atmos-config-path }}
         JQUERY: |
           with_entries(.value |= (.components.terraform)) |                           ## Deal with components type of terraform
-          map_values(map_values(select(.settings.github.actions_enabled // false))) | ## Filter components by enabled github actions
+          map_values(map_values(select(${{ inputs.select-filter }}))) | ## Filter components by enabled github actions
           map_values(select(. != {})) |                                               ## Skip stacks that have 0 selected components
           map_values(. | keys) |                                                      ## Reduce to component names
           with_entries(                                                               ## Construct component object

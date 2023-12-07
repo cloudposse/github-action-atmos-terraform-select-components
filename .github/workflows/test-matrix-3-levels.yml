@@ -26,6 +26,7 @@ jobs:
         id: current
         with:
           atmos-gitops-config-path: "./tests/atmos-gitops.yaml"
+          select-filter: '.settings.github.actions_enabled // false'
           nested-matrices-count: '3'
 
     outputs:
