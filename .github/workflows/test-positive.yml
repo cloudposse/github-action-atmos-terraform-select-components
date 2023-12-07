@@ -26,7 +26,6 @@ jobs:
         id: current
         with:
           atmos-gitops-config-path: "./tests/atmos-gitops.yaml"
-          select-filter: '.settings.github.actions_enabled // false'
 
     outputs:
       selected-components: "${{ steps.current.outputs.selected-components }}"
