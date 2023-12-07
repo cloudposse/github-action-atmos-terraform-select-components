@@ -28,7 +28,7 @@ jobs:
           nested-matrices-count: '2'
 
     outputs:
-      affected: "${{ steps.current.outputs.affected }}"
+      selected-components: "${{ steps.current.outputs.selected-components }}"
       matrix: "${{ steps.current.outputs.matrix }}"
 
   assert:
@@ -38,7 +38,7 @@ jobs:
       - uses: nick-fields/assert-action@v1
         with:
           expected: '[{"component":"test-2","stack":"core-ue2-auto","stack_slug":"core-ue2-auto-test-2"},{"component":"test-4","stack":"plat-ue2-dev","stack_slug":"plat-ue2-dev-test-4"},{"component":"test-5","stack":"plat-ue2-sandbox","stack_slug":"plat-ue2-sandbox-test-5"}]'
-          actual: "${{ needs.test.outputs.affected }}"
+          actual: "${{ needs.test.outputs.selected-components }}"
 
       - uses: nick-fields/assert-action@v1
         with:
