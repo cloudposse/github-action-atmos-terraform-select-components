@@ -79,7 +79,6 @@ runs:
       shell: bash
       env:
         ATMOS_CLI_CONFIG_PATH:  ${{ steps.config.outputs.atmos-config-path }}
-        ATMOS_BASE_PATH: ${{ github.workspace }}
         JQUERY: |
           with_entries(.value |= (.components.terraform)) |                           ## Deal with components type of terraform
           map_values(map_values(select(.settings.github.actions_enabled // false))) | ## Filter components by enabled github actions
