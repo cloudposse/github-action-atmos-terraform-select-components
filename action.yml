@@ -7,23 +7,16 @@ branding:
 inputs:
   jq-query:
     description: jq query that will be used to select atmos components
-    required: true
-  default-branch:
-    description: The default branch to use for the base ref.
     required: false
-    default: ${{ github.event.repository.default_branch }}
-  atmos-version:
-    description: The version of atmos to install if install-atmos is true
+    default: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
+  head-ref:
+    description: The head ref to checkout. If not provided, the head default branch is used.
     required: false
-    default: "latest"
-  atmos-config-path:
-    description: The path to the atmos.yaml file
+    default: ${{ github.sha }}
+  atmos-gitops-config-path:
+    description: The path to the atmos-gitops.yaml file
     required: false
-    default: atmos.yaml
-  terraform-version:
-    description: The version of terraform to install if install-terraform is true
-    required: false
-    default: "latest"
+    default: ./.github/config/atmos-gitops.yaml
   jq-version:
     description: The version of jq to install if install-jq is true
     required: false
@@ -32,13 +25,17 @@ inputs:
     description: "Enable action debug mode. Default: 'false'"
     default: 'false'
     required: false
+  nested-matrices-count:
+    required: false
+    description: 'Matrices nested levels count (from 1 to 3)'
+    default: "2"
 outputs:
   selected-components:
     description: Selected GitOps components
     value: ${{ steps.selected-components.outputs.components }}
   matrix:
     description: Matrix for Selected GitOps components
-    value: ${{ steps.matrix.outputs.matrix }}
+    value: ${{ steps.matrix.outputs.output }}
   has-selected-components:
     description: Whether there are selected components
     value: ${{ steps.selected-components.outputs.components != '[]' }}
@@ -46,10 +43,22 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.head-ref }}
+
+    - name: config
+      uses: blablacar/action-config-levels@dc8ddbca36875e29f870e53bcc1160b7000ff5b2
+      id: config
+      with:
+        output_properties: true
+        patterns: |
+          - ${{ inputs.atmos-gitops-config-path }}
+
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: ${{ inputs.terraform-version }}
+        terraform_version:  ${{ steps.config.outputs.terraform-version }}
         terraform_wrapper: false
 
     - name: Install Atmos
@@ -57,7 +66,7 @@ runs:
       env:
        ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
       with:
-        atmos-version: ${{ inputs.atmos-version }}
+        atmos-version: ${{ steps.config.outputs.atmos-version }}
         install-wrapper: false
 
     - name: Install JQ
@@ -65,26 +74,42 @@ runs:
       with:
         version: ${{ inputs.jq-version }}
 
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ inputs.default-branch }}
-
     - name: Filter Components
       id: selected-components
       shell: bash
       env:
-        ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
+        ATMOS_CLI_CONFIG_PATH:  ${{ steps.config.outputs.atmos-config-path }}
+        ATMOS_BASE_PATH: ${{ github.workspace }}
+        JQUERY: |
+          with_entries(.value |= (.components.terraform)) |                           ## Deal with components type of terraform
+          map_values(map_values(select(.settings.github.actions_enabled // false))) | ## Filter components by enabled github actions
+          map_values(select(. != {})) |                                               ## Skip stacks that have 0 selected components
+          map_values(. | keys) |                                                      ## Reduce to component names
+          with_entries(                                                               ## Construct component object
+            .key as $stack | 
+            .value |= map({
+              "component": ., 
+              "stack": $stack, 
+              "stack_slug": [$stack, .] | join("-")
+            })
+          ) | map(.) | flatten                                                        ## Reduce to flat array
       run: |
-        JQ_QUERY='${{ inputs.jq-query }}' DEBUG="${{ inputs.debug }}" ${{ github.action_path }}/src/filter.sh
+        atmos describe stacks --format json | jq -ce "${JQUERY}" > components.json
 
         components=$(cat components.json)
         echo "Selected components: $components"
         printf "%s" "components=$components" >> $GITHUB_OUTPUT
 
-    - name: Build Matrix
-      id: matrix
-      shell: bash
-      run: |
-        matrix=$(jq -c '{include:[.[]]}' < components.json)
-        echo "matrix=$matrix" >> $GITHUB_OUTPUT
+    - uses: cloudposse/github-action-matrix-unlimited-jq-query@v0
+      id: query
+      with:
+        sort-by: ${{ steps.config.outputs.sort-by }}
+        group-by: ${{ steps.config.outputs.group-by }}
+        nested-matrices-count: ${{ inputs.nested-matrices-count }}
+
+    - id: matrix
+      uses: cloudposse/github-action-jq@v0
+      with:
+        compact: true
+        input: components.json
+        script: ${{ steps.query.outputs.query }}
