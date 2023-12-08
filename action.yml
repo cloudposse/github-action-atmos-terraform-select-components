@@ -35,7 +35,7 @@ outputs:
     value: ${{ steps.selected-components.outputs.components }}
   matrix:
     description: Matrix for Selected GitOps components
-    value: ${{ steps.matrix.outputs.output }}
+    value: ${{ steps.matrix.outputs.matrix }}
   has-selected-components:
     description: Whether there are selected components
     value: ${{ steps.selected-components.outputs.components != '[]' }}
@@ -99,16 +99,10 @@ runs:
         echo "Selected components: $components"
         printf "%s" "components=$components" >> $GITHUB_OUTPUT
 
-    - uses: cloudposse/github-action-matrix-unlimited-jq-query@v0
-      id: query
+    - uses: cloudposse/github-action-matrix-extended@incapsulate-jq
+      id: matrix
       with:
+        matrix: components.json
         sort-by: ${{ steps.config.outputs.sort-by }}
         group-by: ${{ steps.config.outputs.group-by }}
         nested-matrices-count: ${{ inputs.nested-matrices-count }}
-
-    - id: matrix
-      uses: cloudposse/github-action-jq@v0
-      with:
-        compact: true
-        input: components.json
-        script: ${{ steps.query.outputs.query }}
