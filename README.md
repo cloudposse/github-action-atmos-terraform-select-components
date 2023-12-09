@@ -142,7 +142,7 @@ In following GitHub workflow example first job will filter components that have 
             echo "${{ matrix.stack_slug }}"
 ```
 
-### Migrate from `v0` to `v1`
+### Migrating from `v0` to `v1`
 
 `v1` replace `jq-query` input with `selected-filter` variable and simplify the query.
 Now you need to specify only part used in select function of `jq-query`.  
@@ -155,7 +155,7 @@ Now you need to specify only part used in select function of `jq-query`.
 | `atmos-config-path`      |
 
 
-If you want `v1` having the same behaviour as `v0` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v1` inputs.
+If you want the same behavior in `v1`  as in`v0` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v1` inputs.
 
 ```yaml
   - name: Selected Components
