@@ -80,18 +80,18 @@ runs:
       env:
         ATMOS_CLI_CONFIG_PATH:  ${{ steps.config.outputs.atmos-config-path }}
         JQUERY: |
-          with_entries(.value |= (.components.terraform)) |                           ## Deal with components type of terraform
+          with_entries(.value |= (.components.terraform)) |             ## Deal with components type of terraform
           map_values(map_values(select(${{ inputs.select-filter }}))) | ## Filter components by enabled github actions
-          map_values(select(. != {})) |                                               ## Skip stacks that have 0 selected components
-          map_values(. | keys) |                                                      ## Reduce to component names
-          with_entries(                                                               ## Construct component object
+          map_values(select(. != {})) |                                 ## Skip stacks that have 0 selected components
+          map_values(. | keys) |                                        ## Reduce to component names
+          with_entries(                                                 ## Construct component object
             .key as $stack | 
             .value |= map({
               "component": ., 
               "stack": $stack, 
               "stack_slug": [$stack, .] | join("-")
             })
-          ) | map(.) | flatten                                                        ## Reduce to flat array
+          ) | map(.) | flatten                                          ## Reduce to flat array
       run: |
         atmos describe stacks --format json | jq -ce "${JQUERY}" > components.json
 

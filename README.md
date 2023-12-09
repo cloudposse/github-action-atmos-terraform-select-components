@@ -89,6 +89,26 @@ Output of this action is a list of basic component information. For example:
 
 
 
+### Config
+
+The action expects the atmos gitops configuration file to be present in the repository in `./.github/config/atmos-gitops.yaml`.
+The config should have the following structure:
+
+```yaml
+  atmos-version: 1.45.3
+  atmos-config-path: ./rootfs/usr/local/etc/atmos/
+  terraform-state-bucket: cptest-core-ue2-auto-gitops
+  terraform-state-table: cptest-core-ue2-auto-gitops
+  terraform-state-role: arn:aws:iam::xxxxxxxxxxxx:role/cptest-core-ue2-auto-gitops-gha
+  terraform-plan-role: arn:aws:iam::yyyyyyyyyyyy:role/cptest-core-gbl-identity-gitops
+  terraform-apply-role: arn:aws:iam::yyyyyyyyyyyy:role/cptest-core-gbl-identity-gitops
+  terraform-version: 1.5.2
+  aws-region: us-east-2
+  enable-infracost: false
+  sort-by: .stack_slug
+  group-by: .stack_slug | split("-") | [.[0], .[2]] | join("-")  
+```  
+
 ### GitHub Actions Workflow Example
 
 In following GitHub workflow example first job will filter components that have settings `github.actions_enabled: true` and then in following job `stack_slug` will be printed to stdout.
@@ -120,6 +140,41 @@ In following GitHub workflow example first job will filter components that have 
         - name: echo 
           run:
             echo "${{ matrix.stack_slug }}"
+```
+
+### Migrate from `v0` to `v1`
+
+`v1` replace `jq-query` input with `selected-filter` variable and simplify the query.
+Now you need to specify only part used in select function of `jq-query`.  
+
+`v1` moved variables from `inputs` to atmos gitops config path `./.github/config/atmos-gitops.yaml`
+
+|         name             |
+|--------------------------|
+| `atmos-version`          |
+| `atmos-config-path`      |
+
+
+If you want `v1` having the same behaviour as `v0` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v1` inputs.
+
+```yaml
+  - name: Selected Components
+    id: components
+    uses: cloudposse/github-action-atmos-terraform-select-components@v1
+    with:
+      atmos-gitops-config-path: ./.github/config/atmos-gitops.yaml
+      select-filter: '.settings.github.actions_enabled // false'
+```
+
+same behaviour as
+
+```yaml
+  - name: Selected Components
+    id: components
+    uses: cloudposse/github-action-atmos-terraform-select-components@v0
+    with:
+      atmos-config-path: "${{ github.workspace }}/rootfs/usr/local/etc/atmos/"
+      jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
 ```
 
 
@@ -284,8 +339,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 ### Contributors
 
 <!-- markdownlint-disable -->
-|  [![Zinovii Dmytriv][zdmytriv_avatar]][zdmytriv_homepage]<br/>[Zinovii Dmytriv][zdmytriv_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Daniel Miller][milldr_avatar]][milldr_homepage]<br/>[Daniel Miller][milldr_homepage] |
-|---|---|---|
+|  [![Zinovii Dmytriv][zdmytriv_avatar]][zdmytriv_homepage]<br/>[Zinovii Dmytriv][zdmytriv_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Daniel Miller][milldr_avatar]][milldr_homepage]<br/>[Daniel Miller][milldr_homepage] | [![Igor Rodionov][goruha_avatar]][goruha_homepage]<br/>[Igor Rodionov][goruha_homepage] |
+|---|---|---|---|
 <!-- markdownlint-restore -->
 
   [zdmytriv_homepage]: https://github.com/zdmytriv
@@ -294,6 +349,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [osterman_avatar]: https://img.cloudposse.com/150x150/https://github.com/osterman.png
   [milldr_homepage]: https://github.com/milldr
   [milldr_avatar]: https://img.cloudposse.com/150x150/https://github.com/milldr.png
+  [goruha_homepage]: https://github.com/goruha
+  [goruha_avatar]: https://img.cloudposse.com/150x150/https://github.com/goruha.png
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]
