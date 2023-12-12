@@ -130,7 +130,7 @@ usage: |
   | `atmos-config-path`      |
   
   
-  If you want the same behavior in `v1`  as in`v0` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v1` inputs.
+  If you want the same behavior in `v1` as in `v0` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v1` inputs.
   
   ```yaml
     - name: Selected Components
