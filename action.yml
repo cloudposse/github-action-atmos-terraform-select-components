@@ -99,7 +99,7 @@ runs:
         echo "Selected components: $components"
         printf "%s" "components=$components" >> $GITHUB_OUTPUT
 
-    - uses: cloudposse/github-action-matrix-extended@incapsulate-jq
+    - uses: cloudposse/github-action-matrix-extended@v0
       id: matrix
       with:
         matrix: components.json
