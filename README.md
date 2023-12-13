@@ -145,7 +145,9 @@ Now you need to specify only part used in select function of `jq-query`.
 | `atmos-config-path`      |
 
 
-If you want the same behavior in `v1` as in `v0` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v1` inputs.
+For example, if you want the same behavior in `v1` as in `v0`, you should create the `./.github/config/atmos-gitops.yaml` config with the same variables as in `v1` inputs.
+
+In `v1`, the GItHub Action would invocation would look like this: 
 
 ```yaml
   - name: Selected Components
@@ -156,7 +158,7 @@ If you want the same behavior in `v1` as in `v0` you should create config `./.gi
       select-filter: '.settings.github.actions_enabled // false'
 ```
 
-same behaviour as
+This is the same as the following `v0` configuration:
 
 ```yaml
   - name: Selected Components
@@ -166,6 +168,8 @@ same behaviour as
       atmos-config-path: "${{ github.workspace }}/rootfs/usr/local/etc/atmos/"
       jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
 ```
+
+Please note that the atmos-gitops-config-path is not the same file as as the atmos-config-path.
 
 
 
