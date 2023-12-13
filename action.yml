@@ -47,7 +47,9 @@ runs:
       with:
         ref: ${{ inputs.head-ref }}
 
-    - name: config
+    - name: Read Atmos GitOps config
+      ## We have to reference cloudposse fork of https://github.com/blablacar/action-config-levels
+      ## before https://github.com/blablacar/action-config-levels/pull/16 would be merged
       uses: cloudposse/github-action-config-levels@nodejs20
       id: config
       with:
