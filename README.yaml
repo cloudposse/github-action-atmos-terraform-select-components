@@ -122,7 +122,7 @@ usage: |
   ### Migrating from `v0` to `v1`
   The major changes between versions `v0` and `v1` are as follows:
   - `v1` replaced the `jq-query` input parameter with a new parameter called `selected-filter` to simplify the query for end-users.
-  Now you need to specify only the part used inside of the `select(...)` function of the `jq-query`.  
+    Now you need to specify only the part used inside of the `select(...)` function of the `jq-query`.  
   
   -`v1` moved parameters from the `inputs` to the Atmos GitOps config file, which defaults to `./.github/config/atmos-gitops.yaml`
   
