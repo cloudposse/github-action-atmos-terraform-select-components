@@ -81,8 +81,9 @@ Output of this action is a list of basic component information. For example:
 
 ### Config
 
-The action expects the atmos gitops configuration file to be present in the repository in `./.github/config/atmos-gitops.yaml`.
-The config should have the following structure:
+The action expects the Atmos GitOps configuration file to be present in the repository in `./.github/config/atmos-gitops.yaml`.
+
+The config supports the following settings:
 
 ```yaml
   atmos-version: 1.45.3
@@ -98,7 +99,8 @@ The config should have the following structure:
   sort-by: .stack_slug
   group-by: .stack_slug | split("-") | [.[0], .[2]] | join("-")  
 ```  
-
+  [!IMPORTANT]
+  >**Please note!** the `terraform-state-*` parameters refer to the S3 Bucket and corresponding meta storage DynamoDB table used to store the Terraform Plan files, and not the "Terraform State". These parameters will be renamed in a subsequent release.
 ### GitHub Actions Workflow Example
 
 In following GitHub workflow example first job will filter components that have settings `github.actions_enabled: true` and then in following job `stack_slug` will be printed to stdout.
@@ -133,11 +135,11 @@ In following GitHub workflow example first job will filter components that have 
 ```
 
 ### Migrating from `v0` to `v1`
+The major changes between versions `v0` and `v1` are as follows:
+- `v1` replaced the `jq-query` input parameter with a new parameter called `selected-filter` to simplify the query for end-users.
+  Now you need to specify only the part used inside of the `select(...)` function of the `jq-query`.  
 
-`v1` replace `jq-query` input with `selected-filter` variable and simplify the query.
-Now you need to specify only part used in select function of `jq-query`.  
-
-`v1` moved variables from `inputs` to atmos gitops config path `./.github/config/atmos-gitops.yaml`
+-`v1` moved parameters from the `inputs` to the Atmos GitOps config file, which defaults to `./.github/config/atmos-gitops.yaml`
 
 |         name             |
 |--------------------------|
@@ -169,7 +171,7 @@ This is the same as the following `v0` configuration:
       jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
 ```
 
-Please note that the atmos-gitops-config-path is not the same file as as the atmos-config-path.
+Please note that the `atmos-gitops-config-path` is not the same file as the `atmos-config-path`.
 
 
 
