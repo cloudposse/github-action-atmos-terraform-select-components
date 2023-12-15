@@ -27,18 +27,18 @@ inputs:
     required: false
   nested-matrices-count:
     required: false
-    description: 'Matrices nested levels count (from 1 to 3)'
+    description: 'Number of nested matrices that should be returned as the output (from 1 to 3)'
     default: "2"
 outputs:
   selected-components:
     description: Selected GitOps components
     value: ${{ steps.selected-components.outputs.components }}
-  matrix:
-    description: Matrix for Selected GitOps components
-    value: ${{ steps.matrix.outputs.matrix }}
   has-selected-components:
     description: Whether there are selected components
     value: ${{ steps.selected-components.outputs.components != '[]' }}
+  matrix:
+    description: The selected components as matrix structure suitable for extending matrix size workaround (see README)
+    value: ${{ steps.matrix.outputs.matrix }}
 
 runs:
   using: "composite"

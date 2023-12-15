@@ -57,7 +57,7 @@ GitHub Action that outputs list of Atmos components by jq query.
 For example following query will fetch components that have in settings set `github.actions_enabled: true`:
 
 ```
-to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")
+.value.settings.github.actions_enabled // false
 ```
 
 Output of this action is a list of basic component information. For example:
@@ -81,9 +81,8 @@ Output of this action is a list of basic component information. For example:
 
 ### Config
 
-The action expects the Atmos GitOps configuration file to be present in the repository in `./.github/config/atmos-gitops.yaml`.
-
-The config supports the following settings:
+The action expects the atmos gitops configuration file to be present in the repository in `./.github/config/atmos-gitops.yaml`.
+The config should have the following structure:
 
 ```yaml
   atmos-version: 1.45.3
@@ -99,8 +98,10 @@ The config supports the following settings:
   sort-by: .stack_slug
   group-by: .stack_slug | split("-") | [.[0], .[2]] | join("-")  
 ```  
-  [!IMPORTANT]
-  >**Please note!** the `terraform-state-*` parameters refer to the S3 Bucket and corresponding meta storage DynamoDB table used to store the Terraform Plan files, and not the "Terraform State". These parameters will be renamed in a subsequent release.
+
+[!IMPORTANT]
+>**Please note!** the `terraform-state-*` parameters refer to the S3 Bucket and corresponding meta storage DynamoDB table used to store the Terraform Plan files, and not the "Terraform State". These parameters will be renamed in a subsequent release.
+
 ### GitHub Actions Workflow Example
 
 In following GitHub workflow example first job will filter components that have settings `github.actions_enabled: true` and then in following job `stack_slug` will be printed to stdout.
@@ -135,11 +136,11 @@ In following GitHub workflow example first job will filter components that have 
 ```
 
 ### Migrating from `v0` to `v1`
-The major changes between versions `v0` and `v1` are as follows:
-- `v1` replaced the `jq-query` input parameter with a new parameter called `selected-filter` to simplify the query for end-users.
+
+1. `v1` replaces the `jq-query` input parameter with a new parameter called `selected-filter` to simplify the query for end-users.
   Now you need to specify only the part used inside of the `select(...)` function of the `jq-query`.  
 
--`v1` moved parameters from the `inputs` to the Atmos GitOps config file, which defaults to `./.github/config/atmos-gitops.yaml`
+2.`v1` moves most of the `inputs` to the Atmos GitOps config path `./.github/config/atmos-gitops.yaml`. Simply create this file, transfer your settings to it, then remove the corresponding arguments from your invocations of the `cloudposse/github-action-atmos-terraform-select-components` action.
 
 |         name             |
 |--------------------------|
@@ -147,9 +148,7 @@ The major changes between versions `v0` and `v1` are as follows:
 | `atmos-config-path`      |
 
 
-For example, if you want the same behavior in `v1` as in `v0`, you should create the `./.github/config/atmos-gitops.yaml` config with the same variables as in `v1` inputs.
-
-In `v1`, the GItHub Action would invocation would look like this: 
+If you want the same behavior in `v2` as in `v1` you should create config `./.github/config/atmos-gitops.yaml` with the same variables as in `v0` inputs.
 
 ```yaml
   - name: Selected Components
@@ -160,7 +159,7 @@ In `v1`, the GItHub Action would invocation would look like this:
       select-filter: '.settings.github.actions_enabled // false'
 ```
 
-This is the same as the following `v0` configuration:
+Which would produce the same behavior as in `v2`, doing this:
 
 ```yaml
   - name: Selected Components
