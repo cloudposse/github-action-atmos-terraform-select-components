@@ -72,7 +72,7 @@ runs:
         install-wrapper: false
 
     - name: Install JQ
-      uses: dcarbone/install-jq-action@v1.0.1
+      uses: dcarbone/install-jq-action@v2.1.0
       with:
         version: ${{ inputs.jq-version }}
 
