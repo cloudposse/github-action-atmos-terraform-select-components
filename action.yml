@@ -13,10 +13,13 @@ inputs:
     description: The head ref to checkout. If not provided, the head default branch is used.
     required: false
     default: ${{ github.sha }}
-  atmos-gitops-config-path:
-    description: The path to the atmos-gitops.yaml file
+  atmos-version:
+    description: The version of atmos to install
     required: false
-    default: ./.github/config/atmos-gitops.yaml
+    default: ">= 1.63.0"
+  atmos-config-path:
+    description: The path to the atmos.yaml file
+    required: true
   jq-version:
     description: The version of jq to install if install-jq is true
     required: false
@@ -47,34 +50,28 @@ runs:
       with:
         ref: ${{ inputs.head-ref }}
 
-    - name: Read Atmos GitOps config
-      ## We have to reference cloudposse fork of https://github.com/blablacar/action-config-levels
-      ## before https://github.com/blablacar/action-config-levels/pull/16 would be merged
-      uses: cloudposse/github-action-config-levels@nodejs20
-      id: config
-      with:
-        output_properties: true
-        patterns: |
-          - ${{ inputs.atmos-gitops-config-path }}
-
-    - name: Install Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version:  ${{ steps.config.outputs.terraform-version }}
-        terraform_wrapper: false
-
-    - name: Install Atmos
-      uses: cloudposse/github-action-setup-atmos@v1
-      env:
-       ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
-      with:
-        atmos-version: ${{ steps.config.outputs.atmos-version }}
-        install-wrapper: false
-
     - name: Install JQ
       uses: dcarbone/install-jq-action@v1.0.1
       with:
         version: ${{ inputs.jq-version }}
+
+    - if: ${{ inputs.install-atmos == 'true' }}
+      uses: cloudposse/github-action-setup-atmos@v1
+      with:
+        atmos-version: ${{ inputs.atmos-version }}
+        install-wrapper: false
+
+    - name: Set vars
+      shell: bash
+      run: |-
+        echo "ATMOS_CLI_CONFIG_PATH=$(realpath ${{ inputs.atmos-config-path }})" >> $GITHUB_ENV 
+
+    - name: config
+      shell: bash
+      id: config
+      run: |-
+        echo "group-by=$(atmos describe config -f json | jq -r '.integrations.github.gitops.matrix["group-by"]')" >> $GITHUB_OUTPUT
+        echo "sort-by=$(atmos describe config -f json | jq -r '.integrations.github.gitops.matrix["sort-by"]')" >> $GITHUB_OUTPUT        
 
     - name: Filter Components
       id: selected-components
