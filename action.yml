@@ -77,7 +77,6 @@ runs:
       id: selected-components
       shell: bash
       env:
-        ATMOS_CLI_CONFIG_PATH:  ${{ steps.config.outputs.atmos-config-path }}
         JQUERY: |
           with_entries(.value |= (.components.terraform)) |             ## Deal with components type of terraform
           map_values(map_values(select(${{ inputs.select-filter }}))) | ## Filter components by enabled github actions
