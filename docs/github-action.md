@@ -4,7 +4,8 @@
 
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
-| atmos-gitops-config-path | The path to the atmos-gitops.yaml file | ./.github/config/atmos-gitops.yaml | false |
+| atmos-config-path | The path to the atmos.yaml file | N/A | true |
+| atmos-version | The version of atmos to install | >= 1.63.0 | false |
 | debug | Enable action debug mode. Default: 'false' | false | false |
 | head-ref | The head ref to checkout. If not provided, the head default branch is used. | ${{ github.sha }} | false |
 | jq-version | The version of jq to install if install-jq is true | 1.6 | false |
