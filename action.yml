@@ -55,7 +55,7 @@ runs:
       with:
         version: ${{ inputs.jq-version }}
 
-    - if: ${{ inputs.install-atmos == 'true' }}
+    - name: Install Atmos
       uses: cloudposse/github-action-setup-atmos@v1
       with:
         atmos-version: ${{ inputs.atmos-version }}
