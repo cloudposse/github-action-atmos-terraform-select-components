@@ -59,6 +59,23 @@ stacks:
   # Can also be set using `ATMOS_STACKS_NAME_PATTERN` ENV var
   name_pattern: "{tenant}-{environment}-{stage}"
 
+integrations:
+  github:
+    gitops:
+      terraform-version: 1.5.2
+      infracost-enabled: false
+      storage:
+        region: us-east-2
+        bucket: cptest-core-ue2-auto-gitops
+        table: cptest-core-ue2-auto-gitops-plan-storage
+        role: arn:aws:iam::xxxxxxxxxxxx:role/cptest-core-ue2-auto-gitops-gha
+      role:
+        plan: arn:aws:iam::yyyyyyyyyyyy:role/cptest-core-gbl-identity-gitops
+        apply: arn:aws:iam::yyyyyyyyyyyy:role/cptest-core-gbl-identity-gitops
+      matrix:
+        sort-by: .stack_slug
+        group-by: .stack_slug | split("-") | [.[0], .[2]] | join("-")
+
 workflows:
   # Can also be set using `ATMOS_WORKFLOWS_BASE_PATH` ENV var, or `--workflows-dir` command-line arguments
   # Supports both absolute and relative paths
