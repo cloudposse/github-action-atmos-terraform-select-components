@@ -162,7 +162,7 @@ The following configuration fields are now moved to `atmos.yaml`
 
 If you want `v2` having the same behaviour as `v1` you should  have 
 
-`atmos.yaml`
+`./.github/config/atmos-gitops.yaml`
 ```yaml
 ...
 
@@ -192,7 +192,7 @@ integrations:
   id: components
   uses: cloudposse/github-action-atmos-terraform-select-components@v2
   with:
-    atmos-config-path: ./
+    atmos-config-path: ./rootfs/usr/local/etc/atmos/
     jq-query: 'to_entries[] | .key as $parent | .value.components.terraform | to_entries[] | select(.value.settings.github.actions_enabled // false) | [$parent, .key] | join(",")'
 ``` 
 
