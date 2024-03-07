@@ -64,7 +64,7 @@ runs:
         terraform_wrapper: false
 
     - name: Install Atmos
-      uses: cloudposse/github-action-setup-atmos@v1
+      uses: cloudposse/github-action-setup-atmos@v2
       env:
        ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
       with:
