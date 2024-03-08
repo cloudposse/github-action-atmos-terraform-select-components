@@ -70,7 +70,7 @@ Output of this action is a list of basic component information. For example:
 
 ### Config
 
-The action expects the atmos configuration file `atmos.yaml` to be present in the repository and contains.
+The action expects the atmos configuration file `atmos.yaml` to be present in the repository.
 The config should have the following structure:
 
 ```yaml
