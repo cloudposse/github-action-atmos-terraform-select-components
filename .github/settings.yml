@@ -1,0 +1,7 @@
+# Upstream changes from _extends are only recognized when modifications are made to this file in the default branch.
+_extends: .github
+repository:
+  name: github-action-atmos-terraform-select-components
+  description: GitHub Action that output list of Atmos components by jq query
+  homepage: https://cloudposse.com/accelerate
+  topics: ""
