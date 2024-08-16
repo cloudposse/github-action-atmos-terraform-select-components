@@ -23,7 +23,7 @@ inputs:
   jq-version:
     description: The version of jq to install if install-jq is true
     required: false
-    default: "1.6"
+    default: "1.7"
   debug:
     description: "Enable action debug mode. Default: 'false'"
     default: 'false'
@@ -46,14 +46,20 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Install Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
     - uses: actions/checkout@v4
       with:
         ref: ${{ inputs.head-ref }}
 
-    - name: Install JQ
-      uses: dcarbone/install-jq-action@v1.0.1
+    - uses: cloudposse-github-actions/install-gh-releases@v1
       with:
-        version: ${{ inputs.jq-version }}
+        cache: true
+        config: |-
+          jqlang/jq: jq-${{ inputs.jq-version }}
 
     - name: Install Atmos
       uses: cloudposse/github-action-setup-atmos@v2
@@ -85,16 +91,13 @@ runs:
         terraform_wrapper: false
 
     - name: Install OpenTofu
+      uses: cloudposse-github-actions/install-gh-releases@v1
       if: ${{ steps.config.outputs.opentofu-version != '' && steps.config.outputs.opentofu-version != 'null' }}
-      uses: opentofu/setup-opentofu@v1
       with:
-        tofu_version: ${{ steps.config.outputs.opentofu-version }}
-        tofu_wrapper: false
-
-    - name: Install Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+        cache: true
+        config: |-
+          opentofu/opentofu: 
+            tag: ${{ startsWith(steps.config.outputs.opentofu-version, 'v') && steps.config.outputs.opentofu-version || format('v{0}', steps.config.outputs.opentofu-version) }}
 
     - name: Filter Components
       id: selected-components
