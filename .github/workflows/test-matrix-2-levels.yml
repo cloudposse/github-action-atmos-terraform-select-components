@@ -21,10 +21,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - shell: bash
+        run: |
+          mkdir -p ${{ runner.temp }}
+          cp ./tests/atmos.yaml ${{ runner.temp }}/atmos.yaml
+          sed -i -e 's#__PLAN_ROLE__#${{ secrets.TERRAFORM_PLAN_ROLE }}#g' ${{ runner.temp }}/atmos.yaml
+
       - uses: ./
         id: current
         with:
-          atmos-config-path: "./tests"
+          atmos-config-path: "${{ runner.temp }}"
           select-filter: '.settings.github.actions_enabled // false'
           nested-matrices-count: '2'
 
