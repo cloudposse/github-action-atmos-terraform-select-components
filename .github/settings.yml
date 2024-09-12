@@ -5,3 +5,4 @@ repository:
   description: GitHub Action that output list of Atmos components by jq query
   homepage: https://cloudposse.com/accelerate
   topics: ""
+
