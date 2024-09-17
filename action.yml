@@ -103,6 +103,10 @@ runs:
 
     - name: Configure Plan AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
+      if: ${{ steps.config.outputs.aws-region != '' &&
+        steps.config.outputs.aws-region != 'null' &&
+        steps.config.outputs.terraform-plan-role != '' &&
+        steps.config.outputs.terraform-plan-role != 'null' }}
       with:
         aws-region: ${{ steps.config.outputs.aws-region }}
         role-to-assume: ${{ steps.config.outputs.terraform-plan-role }}
