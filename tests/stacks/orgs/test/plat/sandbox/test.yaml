@@ -10,4 +10,5 @@ components:
       settings:
         github:
           actions_enabled: true
-      seed: 3
+      vars:           
+        seed: 3
