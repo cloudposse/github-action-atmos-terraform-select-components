@@ -13,6 +13,10 @@ inputs:
     description: The head ref to checkout. If not provided, the head default branch is used.
     required: false
     default: ${{ github.sha }}
+  skip-checkout:
+    description: "Disable actions/checkout for head-ref. Useful for when the checkout happens in a previous step and file are modified outside of git through other actions"
+    required: false
+    default: 'false'      
   atmos-version:
     description: The version of atmos to install
     required: false
@@ -52,6 +56,7 @@ runs:
         node-version: 20
 
     - uses: actions/checkout@v4
+      if: ${{ inputs.skip-checkout != 'true' }}    
       with:
         ref: ${{ inputs.head-ref }}
 
