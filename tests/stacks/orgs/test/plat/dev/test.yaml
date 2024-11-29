@@ -7,9 +7,11 @@ vars:
 components:
   terraform:
     test-3:
-      seed: 6
+      vars:     
+        seed: 6
     test-4:
       settings:
         github:
           actions_enabled: true
-      seed: 2
+      vars:           
+        seed: 2
