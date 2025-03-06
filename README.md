@@ -190,6 +190,7 @@ The following configuration fields moved to the `atmos.yaml` configuration file.
 | `enable-infracost`       |  `integrations.github.gitops.infracost-enabled` |
 | `sort-by`                |  `integrations.github.gitops.matrix.sort-by`    |
 | `group-by`               |  `integrations.github.gitops.matrix.group-by`   |
+| `process-functions`      |  `integrations.github.gitops.matrix.process-functions`   |
 
 
 For example, to migrate from `v1` to `v2`, you should have something similar to the following in your `atmos.yaml`:

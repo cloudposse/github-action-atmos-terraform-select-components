@@ -11,6 +11,7 @@
 | jq-version | The version of jq to install if install-jq is true | 1.6 | false |
 | nested-matrices-count | Number of nested matrices that should be returned as the output (from 1 to 3) | 2 | false |
 | select-filter | jq query that will be used to select atmos components | . | false |
+| process-functions | Whether to process functions | true | false |
 
 
 ## Outputs

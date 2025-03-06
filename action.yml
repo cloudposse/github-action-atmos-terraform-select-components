@@ -36,6 +36,10 @@ inputs:
     required: false
     description: 'Number of nested matrices that should be returned as the output (from 1 to 3)'
     default: "2"
+  process-functions:
+    required: false
+    description: 'Whether to process atmos functions'
+    default: true
 outputs:
   selected-components:
     description: Selected GitOps components
@@ -136,12 +140,14 @@ runs:
             })
           ) | map(.) | flatten                                          ## Reduce to flat array
       run: |
-        atmos describe stacks --format json | jq -ce "${JQUERY}" > components.json
-
+        process_function_arg=""
+        if [ "${{ inputs.process-functions }}" == "false" ]; then
+          process_function_arg="--process-functions=false"
+        fi
+        atmos describe stacks $process_function_arg --format json | jq -ce "${JQUERY}" > components.json
         components=$(cat components.json)
         echo "Selected components: $components"
-        printf "%s" "components=$components" >> $GITHUB_OUTPUT
-
+        printf "%s" "components=$components" >> $GITHUB_OUTPUT    
     - uses: cloudposse/github-action-matrix-extended@v0
       id: matrix
       with:
