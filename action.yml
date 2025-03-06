@@ -39,7 +39,7 @@ inputs:
   process-functions:
     required: false
     description: 'Whether to process atmos functions'
-    default: true
+    default: 'true'
 outputs:
   selected-components:
     description: Selected GitOps components
