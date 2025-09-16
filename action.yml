@@ -111,7 +111,7 @@ runs:
             tag: ${{ startsWith(steps.config.outputs.opentofu-version, 'v') && steps.config.outputs.opentofu-version || format('v{0}', steps.config.outputs.opentofu-version) }}
 
     - name: Configure Plan AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@v5
       if: ${{ steps.config.outputs.aws-region != '' &&
         steps.config.outputs.aws-region != 'null' &&
         steps.config.outputs.terraform-plan-role != '' &&
