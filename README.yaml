@@ -291,7 +291,7 @@ usage: |
   Please note that the `atmos-gitops-config-path` is not the same file as the `atmos-config-path`.
 
 
-include:
+include: []
 
 contributors:
   - name: "Zinovii Dmytriv"
