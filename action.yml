@@ -55,11 +55,11 @@ runs:
   using: "composite"
   steps:
     - name: Install Node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: 24
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       if: ${{ inputs.skip-checkout != 'true' }}    
       with:
         ref: ${{ inputs.head-ref }}
@@ -71,7 +71,7 @@ runs:
           jqlang/jq: jq-${{ inputs.jq-version }}
 
     - name: Install Atmos
-      uses: cloudposse/github-action-setup-atmos@v2
+      uses: cloudposse/github-action-setup-atmos@60878d48037763f759aedee74e9cc0c2dc88e9ec # v3.5.0
       env:
        ATMOS_CLI_CONFIG_PATH: ${{inputs.atmos-config-path}}
       with:
@@ -96,7 +96,7 @@ runs:
 
     - name: Install Terraform
       if: ${{ steps.config.outputs.terraform-version != '' && steps.config.outputs.terraform-version != 'null' }}
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
       with:
         terraform_version: ${{ steps.config.outputs.terraform-version }}
         terraform_wrapper: false
@@ -111,7 +111,7 @@ runs:
             tag: ${{ startsWith(steps.config.outputs.opentofu-version, 'v') && steps.config.outputs.opentofu-version || format('v{0}', steps.config.outputs.opentofu-version) }}
 
     - name: Configure Plan AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
+      uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
       if: ${{ steps.config.outputs.aws-region != '' &&
         steps.config.outputs.aws-region != 'null' &&
         steps.config.outputs.terraform-plan-role != '' &&
@@ -120,7 +120,7 @@ runs:
         aws-region: ${{ steps.config.outputs.aws-region }}
         role-to-assume: ${{ steps.config.outputs.terraform-plan-role }}
         role-session-name: "atmos-terraform-plan-gitops"
-        mask-aws-account-id: "no"
+        mask-aws-account-id: "false"
 
     - name: Filter Components
       id: selected-components
