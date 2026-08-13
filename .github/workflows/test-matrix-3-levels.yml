@@ -32,7 +32,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - shell: bash
         run: |
@@ -55,18 +55,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - uses: nick-fields/assert-action@v2
+      - uses: nick-fields/assert-action@0efd6166067d9c59d89c710fab4f79fb066f8985 # v4.0.1
         with:
           expected: '[{"component":"test-2","stack":"core-ue2-auto","stack_slug":"core-ue2-auto-test-2"},{"component":"test-4","stack":"plat-ue2-dev","stack_slug":"plat-ue2-dev-test-4"},{"component":"test-5","stack":"plat-ue2-sandbox","stack_slug":"plat-ue2-sandbox-test-5"}]'
           actual: "${{ needs.test.outputs.selected-components }}"
 
-      - uses: nick-fields/assert-action@v2
+      - uses: nick-fields/assert-action@0efd6166067d9c59d89c710fab4f79fb066f8985 # v4.0.1
         with:
           expected: '{"include":['
           actual: "${{ needs.test.outputs.matrix }}"
           comparison: contains
 
-      - uses: nick-fields/assert-action@v2
+      - uses: nick-fields/assert-action@0efd6166067d9c59d89c710fab4f79fb066f8985 # v4.0.1
         with:
           expected: '{"include":[{"name":"core-auto","items":"{\"include\":[{\"name\":\"core-ue2-auto-test-2 - core-ue2-auto-test-2\",\"items\":\"{\\\"include\\\":[{\\\"component\\\":\\\"test-2\\\",\\\"stack\\\":\\\"core-ue2-auto\\\",\\\"stack_slug\\\":\\\"core-ue2-auto-test-2\\\"}]}\"}]}"},{"name":"plat-dev","items":"{\"include\":[{\"name\":\"plat-ue2-dev-test-4 - plat-ue2-dev-test-4\",\"items\":\"{\\\"include\\\":[{\\\"component\\\":\\\"test-4\\\",\\\"stack\\\":\\\"plat-ue2-dev\\\",\\\"stack_slug\\\":\\\"plat-ue2-dev-test-4\\\"}]}\"}]}"},{"name":"plat-sandbox","items":"{\"include\":[{\"name\":\"plat-ue2-sandbox-test-5 - plat-ue2-sandbox-test-5\",\"items\":\"{\\\"include\\\":[{\\\"component\\\":\\\"test-5\\\",\\\"stack\\\":\\\"plat-ue2-sandbox\\\",\\\"stack_slug\\\":\\\"plat-ue2-sandbox-test-5\\\"}]}\"}]}"}]}'
           actual: "${{ needs.test.outputs.matrix }}"
