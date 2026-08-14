@@ -59,7 +59,7 @@ runs:
       with:
         node-version: 24
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       if: ${{ inputs.skip-checkout != 'true' }}    
       with:
         ref: ${{ inputs.head-ref }}
