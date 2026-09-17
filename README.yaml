@@ -28,6 +28,13 @@ related: []
 description: GitHub Action that outputs list of Atmos components by jq query
 
 introduction: |-
+  > [!WARNING]
+  > **Deprecated.** Migrate to [Atmos Native CI](https://atmos.tools/ci).
+
+  This action is deprecated in favor of Atmos Native CI. See the migration guide at
+  https://atmos.tools/deprecated/github-actions/atmos-terraform-select-components for the equivalent
+  built-in commands (`atmos describe affected --format=matrix` / `atmos list components --query`) and how to move your workflow over.
+
   GitHub Action that outputs list of Atmos components by jq query.
 
   For example following query will fetch components that have in settings set `github.actions_enabled: true`:
