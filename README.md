@@ -34,7 +34,7 @@ GitHub Action that outputs list of Atmos components by jq query
 
 
 > [!WARNING]
-> **Deprecated.** Migrate to [Atmos Native CI](https://atmos.tools/deprecated/github-actions/atmos-terraform-select-components).
+> **Deprecated.** Migrate to [Atmos Native CI](https://atmos.tools/ci).
 
 
 
